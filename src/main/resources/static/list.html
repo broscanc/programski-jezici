@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicBox</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+</head>
+
+<body data-bs-theme="dark">
+
+<nav class="navbar navbar-expand-lg mb-3">
+    <div class="container">
+
+        <a class="navbar-brand" href="index.html">
+            <i class="fa-solid fa-music"></i>
+            MusicBox
+        </a>
+
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse"
+             id="navbarSupportedContent">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+                    <a class="nav-link active"
+                       href="index.html">
+                        <i class="fa-solid fa-house"></i>
+                        Početna
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active"
+                       href="list.html">
+                        <i class="fa-solid fa-table-list"></i>
+                        Lista
+                    </a>
+                </li>
+                  <li class="nav-item">
+                    <a class="nav-link active"
+                       href="album.html">
+                        <i class="fa-solid fa-compact-disc"></i>
+                        Albumi
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    <table class="table table-striped">
+
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Naziv</th>
+                <th>Trajanje</th>
+                <th>Album</th>
+                <th>Žanr</th>
+                <th>Pevač</th>
+                <th>Opcije</th>
+            </tr>
+        </thead>
+
+        <tbody id="songs">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+fetch('http://localhost/api/song')
+.then(rsp => rsp.json())
+.then(data => {
+
+    const list = document.getElementById('songs');
+
+    const sorted = data.sort(
+        (s1, s2) => s2.songId - s1.songId
+    );
+
+    let content = '';
+
+    for (const song of sorted) {
+
+        content += `
+        <tr>
+
+            <th>${song.songId}</th>
+
+            <td>${song.title}</td>
+
+            <td>${song.time}</td>
+
+            <td>
+                ${song.album ? song.album.title : '-'}
+            </td>
+
+            <td>
+                ${
+                    song.songGenres && song.songGenres.length > 0
+                    ? song.songGenres[0].genre.name
+                    : '-'
+                }
+            </td>
+
+            <td>
+                ${
+                    song.songSingers && song.songSingers.length > 0
+                    ? song.songSingers[0].singer.name
+                    : '-'
+                }
+            </td>
+
+            <td>
+                <a href="./details.html?id=${song.songId}"
+                   class="btn btn-sm btn-primary">
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                    Detalji
+                </a>
+            </td>
+
+        </tr>
+        `;
+    }
+
+    list.innerHTML = content;
+})
+.catch(error => {
+    console.error(error);
+});
+
+</script>
+
+</body>
+</html>
