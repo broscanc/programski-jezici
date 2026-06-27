@@ -1,4 +1,4 @@
-package rs.ac.singidunum.pj;
+package rs.ac.singidunum.pj.controller;
 
 import lombok.RequiredArgsConstructor;
 
@@ -9,12 +9,13 @@ import rs.ac.singidunum.pj.entity.Album;
 import rs.ac.singidunum.pj.repo.AlbumRepository;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/album")
 @RequiredArgsConstructor
-public class AlbumControler {
+public class AlbumController {
 
     private final AlbumRepository repository;
 
@@ -32,21 +33,21 @@ public class AlbumControler {
     public Album createAlbum(@RequestBody Album album) {
         album.setDeletedAt(null);
         album.setEditedAt(null);
+        album.setDate(new Date());
+        album.setPoster("");
         return repository.save(album);
     }
 
-    @PutMapping(path = "/{id}")
-    public Album updateAlbum(@PathVariable Integer id, @RequestBody Album entity) {
-        Album album = repository.findOneByAlbumIdAndDeletedAtIsNull(id).orElseThrow();
+        @PutMapping(path = "/{id}")
+        public Album updateAlbum(@PathVariable Integer id, @RequestBody Album entity) {
+            Album album = repository.findOneByAlbumIdAndDeletedAtIsNull(id).orElseThrow();
 
-        album.setTitle(entity.getTitle());
-        album.setPoster(entity.getPoster());
-        album.setDate(entity.getDate());
-        album.setBend(entity.getBend());
-        album.setEditedAt(LocalDateTime.now());
+            album.setTitle(entity.getTitle());
+            album.setBend(entity.getBend());
+            album.setEditedAt(LocalDateTime.now());
 
-        return repository.save(album);
-    }
+            return repository.save(album);
+        }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)

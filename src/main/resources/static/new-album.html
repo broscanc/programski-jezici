@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Album</title>
+    <title>Dodaj Album</title>
      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
@@ -63,13 +63,10 @@
     <div class="crud-container">
         <div class="card">
             <div class="card-header">
-                <strong>Edit album</strong>
+                <strong>Dodaj Album</strong>
             </div>
             <div class="card-body">
-                 <div class="mb-3">
-                    <label for="id" class="form-label">ID: </label>
-                    <input type="number" class="form-control" id="id">
-                </div>
+                 
                 <div class="mb-3">
                     <label for="title" class="form-text">Naslov: </label>
                     <input type="text" class="form-control" id="title">
@@ -90,30 +87,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-       const params=new URLSearchParams(window.location.search)
-       const id=params.get('id')
-
-       const inputId=document.getElementById('id')
+      
        const inputTitle=document.getElementById('title')
        const inputBend=document.getElementById('bend')
 
        function openAll(){
         window.location.href='/album.html'
        }
-       if(id==null || id=='')
-        {
-            openAll()
-        }
-       fetch(`/api/album/${id}`)
-       .then(rsp=>rsp.json())
-       .then(data=>{
-        inputId.value=data.albumId
-        inputTitle.value=data.title
-        inputBend.value=data.bend
+      
+       
 
        document.getElementById('save').addEventListener('click',() =>{
-            fetch(`/api/album/${data.albumId}`,{
-                method: 'PUT',
+            fetch(`/api/album`,{
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -121,10 +107,19 @@
                     title: inputTitle.value,
                     bend: inputBend.value
                 })
-            }).then(rsp=> openAll())
+            })//.then(rsp=> openAll())
+            .then(async rsp => {
+    console.log("STATUS:", rsp.status);
+    console.log(await rsp.text());
+
+    if (rsp.ok) {
+        openAll();
+    }
+})
+.catch(error => console.error("FETCH ERROR:", error));
         })
 
-       })
+       
     </script>
    
 </body>

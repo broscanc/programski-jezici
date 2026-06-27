@@ -79,16 +79,21 @@
     </table>
 
 </div>
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        /*Swal.fire({
+            title: 'Loading Albums'
+        }).then(()=>{
+            Swal.showLoading()
+        })*/
         const table=document.getElementById('songs')
         function edit(id){
             window.location.href='/edit-album.html?id='+id
         }
         function remove(id){
-            if(!confirm('Obrisi album ${id}?'))
+            if(!confirm(`Obrisi album ${id}?`))
             return
 
             fetch(`/api/album/${id}`, {method: 'delete'})
@@ -131,6 +136,7 @@
         console.log(data);
             }
             table.innerHTML=content
+            //Swal.closeLoading()
          })
         
     </script>
