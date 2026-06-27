@@ -85,7 +85,7 @@
     <script>
         const table=document.getElementById('songs')
         function edit(id){
-
+            window.location.href='/edit-album.html?id='+id
         }
         function remove(id){
             if(!confirm('Obrisi album ${id}?'))

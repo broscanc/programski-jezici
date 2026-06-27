@@ -26,4 +26,6 @@ public class Album {
 
     @Column(name = "deletedAt")
     private LocalDateTime deletedAt;
+    @Column(name = "editedAt")
+    private LocalDateTime editedAt;
 }
