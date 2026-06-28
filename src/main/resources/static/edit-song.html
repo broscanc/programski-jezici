@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Song</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+</head>
+
+<body data-bs-theme="dark">
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <strong>Edit song</strong>
+        </div>
+
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">ID:</label>
+                <input type="number" class="form-control" id="id" disabled>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Naziv:</label>
+                <input type="text" class="form-control" id="title">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Lyrics:</label>
+                <textarea class="form-control" id="lyrics"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Poster:</label>
+                <input type="text" class="form-control" id="poster">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Trajanje:</label>
+                <input type="time" class="form-control" id="time" step="1">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Datum:</label>
+                <input type="date" class="form-control" id="date">
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <button type="button" class="btn btn-success" id="save">
+                <i class="fa-regular fa-floppy-disk"></i>
+                Save
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const id = params.get('id');
+
+if (id == null || id === '') {
+    window.location.href = '/list.html';
+}
+
+const inputId = document.getElementById('id');
+const inputTitle = document.getElementById('title');
+const inputLyrics = document.getElementById('lyrics');
+const inputPoster = document.getElementById('poster');
+const inputTime = document.getElementById('time');
+const inputDate = document.getElementById('date');
+
+fetch(`/api/song/${id}`)
+    .then(rsp => rsp.json())
+    .then(song => {
+        inputId.value = song.songId;
+        inputTitle.value = song.title;
+        inputLyrics.value = song.lyrics;
+        inputPoster.value = song.poster;
+        inputTime.value = song.time;
+        inputDate.value = song.date;
+
+        document.getElementById('save').addEventListener('click', () => {
+            fetch(`/api/song/${song.songId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: inputTitle.value,
+                    lyrics: inputLyrics.value,
+                    poster: inputPoster.value,
+                    time: inputTime.value,
+                    date: inputDate.value
+                })
+            }).then(rsp => {
+                window.location.href = '/list.html';
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

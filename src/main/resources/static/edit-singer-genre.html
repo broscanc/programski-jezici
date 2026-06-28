@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Singer</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body data-bs-theme="dark">
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <strong>Edit singer and genre</strong>
+        </div>
+
+        <input id="singerName" class="form-control">
+<input id="genreName" class="form-control">
+
+
+<button class="btn btn-success" id="save">
+    Save
+</button>
+    </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const singerId = params.get('singerId');
+const genreId = params.get('genreId');
+const songId = params.get('songId');
+
+const singerName = document.getElementById('singerName');
+const genreName = document.getElementById('genreName');
+
+fetch(`/api/singer/${singerId}`)
+.then(r => r.json())
+.then(s => singerName.value = s.name);
+
+fetch(`/api/genre/${genreId}`)
+.then(r => r.json())
+.then(g => genreName.value = g.name);
+
+document.getElementById('save').addEventListener('click', () => {
+    Promise.all([
+        fetch(`/api/singer/${singerId}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ name: singerName.value })
+        }),
+        fetch(`/api/genre/${genreId}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ name: genreName.value })
+        })
+    ]).then(() => {
+        window.location.href = `/details.html?id=${songId}`;
+    });
+});
+</script>
+
+</body>
+</html>

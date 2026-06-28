@@ -17,10 +17,7 @@
 <nav class="navbar navbar-expand-lg mb-3">
     <div class="container">
 
-        <a class="navbar-brand" href="index.html">
-            <i class="fa-solid fa-music"></i>
-            MusicBox
-        </a>
+       
 
         <button class="navbar-toggler"
                 type="button"
@@ -35,11 +32,10 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                 <li class="nav-item">
-                    <a class="nav-link active"
-                       href="index.html">
-                        <i class="fa-solid fa-house"></i>
-                        Početna
-                    </a>
+                    <a class="nav-link active" href="index.html">
+            <i class="fa-solid fa-music"></i>
+            MusicBox
+        </a>
                 </li>
 
                 <li class="nav-item">
@@ -89,15 +85,17 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-
-fetch('http://localhost/api/song')
+function edit(id) {
+    window.location.href = '/edit-song.html?id=' + id;
+}
+fetch('http://localhost:8080/api/song')
 .then(rsp => rsp.json())
 .then(data => {
 
     const list = document.getElementById('songs');
 
     const sorted = data.sort(
-        (s1, s2) => s2.songId - s1.songId
+        (s1, s2) => s1.songId - s2.songId
     );
 
     let content = '';
@@ -119,32 +117,35 @@ fetch('http://localhost/api/song')
 
             <td>
                 ${
-                    song.songGenres && song.songGenres.length > 0
-                    ? song.songGenres[0].genre.name
-                    : '-'
+                    song.genres && song.genres.length > 0 ? song.genres.map(g => g.name).join(', ') : '-'
                 }
             </td>
 
             <td>
                 ${
-                    song.songSingers && song.songSingers.length > 0
-                    ? song.songSingers[0].singer.name
-                    : '-'
+                    song.singers && song.singers.length > 0 ? song.singers.map(s => s.name).join(', ') : '-'
                 }
             </td>
 
             <td>
-                <a href="./details.html?id=${song.songId}"
-                   class="btn btn-sm btn-primary">
-                    <i class="fa-solid fa-up-right-from-square"></i>
-                    Detalji
-                </a>
-            </td>
+    <div class="btn-group">
+        <a href="./details.html?id=${song.songId}"
+           class="btn btn-sm btn-primary">
+            <i class="fa-solid fa-up-right-from-square"></i>
+        </a>
+
+        <button class="btn btn-sm btn-success"
+                type="button"
+                onclick="edit(${song.songId})">
+            <i class="fa-regular fa-pen-to-square"></i>
+        </button>
+    </div>
+</td>
 
         </tr>
         `;
     }
-
+console.log(data);
     list.innerHTML = content;
 })
 .catch(error => {

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Singer</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+</head>
+
+<body data-bs-theme="dark">
+
+<div class="container mt-4">
+    <h3>Pevači</h3>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Ime</th>
+            <th>Opcije</th>
+        </tr>
+        </thead>
+
+        <tbody id="singers"></tbody>
+    </table>
+</div>
+
+<script>
+const table = document.getElementById('singers');
+
+function edit(id) {
+    window.location.href = '/edit-singer.html?id=' + id;
+}
+
+function remove(id) {
+    if (!confirm('Obriši pevača ' + id + '?')) return;
+
+    fetch(`/api/singer/${id}`, { method: 'DELETE' })
+        .then(() => window.location.reload());
+}
+
+fetch('/api/singer')
+    .then(rsp => rsp.json())
+    .then(data => {
+        let content = '';
+
+        for (let singer of data) {
+            content += `
+            <tr>
+                <th>${singer.singerId}</th>
+                <td>${singer.name}</td>
+                <td>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-success"
+                                onclick="edit(${singer.singerId})">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                        </button>
+
+                        <button class="btn btn-sm btn-danger"
+                                onclick="remove(${singer.singerId})">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        }
+
+        table.innerHTML = content;
+    });
+</script>
+
+</body>
+</html>

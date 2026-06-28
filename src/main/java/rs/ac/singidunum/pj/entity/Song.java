@@ -3,7 +3,7 @@ package rs.ac.singidunum.pj.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-
+import java.util.List;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,4 +39,14 @@ public class Song {
     @ManyToOne
     @JoinColumn(name = "albumId")
     private Album album;
+
+    @ManyToMany
+    @JoinTable(name = "songSinger",joinColumns = @JoinColumn(name = "songId"),
+    inverseJoinColumns = @JoinColumn(name = "singerId"))
+    private List<Singer> singers;
+
+    @ManyToMany
+@JoinTable(name = "songGenre",joinColumns = @JoinColumn(name = "songId"),inverseJoinColumns = @JoinColumn(name = "genreId"))
+private List<Genre> genres;
+
 }
