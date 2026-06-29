@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dodaj Pesmu</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body data-bs-theme="dark">
+
+<nav class="navbar navbar-expand-lg mb-3">
+    <div class="container">
+
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="index.html">
+                        <i class="fa-solid fa-music"></i>
+                        MusicBox
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="list.html">
+                        <i class="fa-solid fa-table-list"></i>
+                        Lista
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="album.html">
+                        <i class="fa-solid fa-compact-disc"></i>
+                        Albumi
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="crud-container">
+
+        <div class="card">
+            <div class="card-header">
+                <strong>
+                    <i class="fa-solid fa-plus"></i>
+                    Dodaj Pesmu
+                </strong>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label for="title" class="form-text">Naslov:</label>
+                    <input type="text" class="form-control" id="title">
+                </div>
+
+                <div class="mb-3">
+                    <label for="lyrics" class="form-text">Tekst pesme:</label>
+                    <textarea class="form-control" id="lyrics" rows="4"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="poster" class="form-text">Poster:</label>
+                    <input type="file" class="form-control" id="poster">
+                </div>
+
+                <div class="mb-3">
+                    <label for="time" class="form-text">Trajanje:</label>
+                    <input type="time" class="form-control" id="time">
+                </div>
+
+                <div class="mb-3">
+                    <label for="date" class="form-text">Datum:</label>
+                    <input type="date" class="form-control" id="date">
+                </div>
+
+                <div class="mb-3">
+                    <label for="albumId" class="form-text">Album ID:</label>
+                    <label>Album</label>
+
+                    <select id="albumId" class="form-select">
+
+</select>
+                </div>
+
+            </div>
+
+            <div class="card-footer">
+                <button type="button" class="btn btn-success" id="save">
+                    <i class="fa-regular fa-floppy-disk"></i>
+                    Save
+                </button>
+
+                <a href="list.html" class="btn btn-secondary">
+                    Nazad
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="utils.js"></script>
+
+<script>
+const inputTitle = document.getElementById('title');
+const inputLyrics = document.getElementById('lyrics');
+const inputPoster = document.getElementById('poster');
+const inputTime = document.getElementById('time');
+const inputDate = document.getElementById('date');
+const inputAlbumId = document.getElementById('albumId');
+
+function openAll() {
+    window.location.href = '/list.html';
+}
+fetch('/api/album')
+.then(r => r.json())
+.then(albums => {
+
+    const select = document.getElementById('albumId');
+
+    albums.forEach(album => {
+        select.innerHTML += `
+            <option value="${album.albumId}">
+                ${album.title}
+            </option>
+        `;
+    });
+
+});
+document.getElementById('save').addEventListener('click', () => {
+    fetch('/api/song', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            title: inputTitle.value,
+            lyrics: inputLyrics.value,
+            poster: inputPoster.value,
+            time: inputTime.value,
+            date: inputDate.value,
+            album: {
+                albumId: inputAlbumId.value
+            }
+        })
+    })
+    .then(async rsp => {
+        console.log("STATUS:", rsp.status);
+        console.log(await rsp.text());
+
+        if (rsp.ok) {
+            openAll();
+        }
+    })
+    .catch(error => console.error("FETCH ERROR:", error));
+});
+</script>
+
+</body>
+</html>

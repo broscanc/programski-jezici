@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dodaj Album</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body data-bs-theme="dark">
+
+<nav class="navbar navbar-expand-lg mb-3">
+    <div class="container">
+        <div class="collapse navbar-collapse show">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="index.html">
+                        <i class="fa-solid fa-music"></i> MusicBox
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="list.html">
+                        <i class="fa-solid fa-table-list"></i> Lista
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="album.html">
+                        <i class="fa-solid fa-compact-disc"></i> Albumi
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="crud-container">
+        <div class="card">
+
+            <div class="card-header">
+                <strong>
+                    <i class="fa-solid fa-plus"></i>
+                    Dodaj Album
+                </strong>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label for="title" class="form-text">Naslov:</label>
+                    <input type="text" class="form-control" id="title">
+                </div>
+
+                <div class="mb-3">
+                    <label for="poster" class="form-text">Poster:</label>
+                    <input type="file" class="form-control" id="poster">
+                </div>
+
+                <div class="mb-3">
+                    <label for="date" class="form-text">Datum:</label>
+                    <input type="date" class="form-control" id="date">
+                </div>
+
+                <div class="mb-3">
+                    <label for="bend" class="form-text">Bend:</label>
+                    <input type="text" class="form-control" id="bend">
+                </div>
+
+            </div>
+
+            <div class="card-footer">
+                <button type="button" class="btn btn-success" id="save">
+                    <i class="fa-regular fa-floppy-disk"></i>
+                    Save
+                </button>
+
+                <a href="album.html" class="btn btn-secondary">
+                    Nazad
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const inputTitle = document.getElementById('title');
+const inputPoster = document.getElementById('poster');
+const inputDate = document.getElementById('date');
+const inputBend = document.getElementById('bend');
+
+function openAll() {
+    window.location.href = '/album.html';
+}
+
+document.getElementById('save').addEventListener('click', () => {
+    fetch('/api/album', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            title: inputTitle.value,
+            poster: inputPoster.value,
+            date: inputDate.value,
+            bend: inputBend.value
+        })
+    })
+    .then(rsp => {
+        if (rsp.ok) {
+            openAll();
+        } else {
+            alert('Album nije sačuvan.');
+        }
+    })
+    .catch(error => console.error(error));
+});
+</script>
+
+</body>
+</html>
