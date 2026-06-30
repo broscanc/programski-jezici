@@ -136,7 +136,7 @@ fetch('/api/song')
 .then(data => {
     songs = Array.isArray(data) ? data : data.content;
 
-    songs.sort((s1, s2) => s2.songId - s1.songId);
+    songs.sort((s1, s2) => s1.songId - s2.songId);
 
     showSongs(songs);
 })
