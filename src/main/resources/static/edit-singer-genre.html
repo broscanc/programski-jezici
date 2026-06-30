@@ -8,7 +8,56 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 
-    <link rel="stylesheet" href="/css/style.css">
+   <style>
+    .nav-item {
+            font-size: 20px;
+            font-weight: 500;
+            transition: 0.2s;
+}
+
+.crud-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.edit-box {
+    max-width: 650px;
+    margin: 70px auto;
+    padding: 35px;
+    background-color: #2b3035;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+}
+
+.edit-title {
+    text-align: center;
+    font-size: 38px;
+    font-weight: bold;
+    margin: 0 0 35px 0;
+}
+
+.form-label {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    height: 50px;
+    font-size: 17px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    font-size: 18px;
+    padding: 10px 35px;
+}
+
+.text-center {
+    margin-top: 10px;
+}
+
+   </style>
 
 </head>
 <body data-bs-theme="dark">
@@ -65,16 +114,16 @@
 
                 <h1 class="edit-title">
                     <i class="fa-solid fa-pen-to-square"></i>
-                    Edit Singer and Genre
+                    Izmeni pevača i žanr
                 </h1>
 
                 <div class="mb-3">
-                    <label class="form-label">Singer</label>
+                    <label class="form-label">Pevač</label>
                     <input id="singerName" class="form-control form-control-lg">
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label">Genre</label>
+                    <label class="form-label">Žanr</label>
                     <input id="genreName" class="form-control form-control-lg">
                 </div>
 
@@ -93,6 +142,7 @@
 
 </div>
 <script src="utils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 const params = new URLSearchParams(window.location.search);
 const singerId = params.get('singerId');
@@ -109,24 +159,45 @@ fetch(`/api/singer/${singerId}`)
 fetch(`/api/genre/${genreId}`)
 .then(r => r.json())
 .then(g => genreName.value = g.name);
-
 document.getElementById('save').addEventListener('click', () => {
-    Promise.all([
-        fetch(`/api/singer/${singerId}`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ name: singerName.value })
-        }),
-        fetch(`/api/genre/${genreId}`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ name: genreName.value })
-        })
-    ]).then(() => {
-        window.location.href = `/details.html?id=${songId}`;
+
+    Swal.fire({
+        title: 'Sačuvati izmene?',
+        text: 'Da li ste sigurni da želite da sačuvate izmene?',
+        icon: 'question',
+        showCancelButton: true,
+        background: '#2b3035',
+    color: '#ffffff',
+        confirmButtonColor: '#198754',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sačuvaj',
+        cancelButtonText: 'Ne'
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            Promise.all([
+                fetch(`/api/singer/${singerId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: singerName.value })
+                }),
+
+                fetch(`/api/genre/${genreId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: genreName.value })
+                })
+
+            ]).then(() => {
+                window.location.href = `/details.html?id=${songId}`;
+            });
+
+        }
+
     });
+
 });
 </script>
-
 </body>
 </html>

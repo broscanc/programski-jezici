@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +9,59 @@
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    <link rel="stylesheet" href="/css/style.css">
+    <style>
+    .nav-item {
+            font-size: 20px;
+            font-weight: 500;
+            transition: 0.2s;
+}
+
+.crud-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.edit-box {
+    max-width: 650px;
+    margin: 70px auto;
+    padding: 35px;
+    background-color: #2b3035;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+}
+
+.edit-title {
+    text-align: center;
+    font-size: 38px;
+    font-weight: bold;
+    margin: 0 0 35px 0;
+}
+
+.form-label {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    height: 50px;
+    font-size: 17px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    font-size: 18px;
+    padding: 10px 35px;
+}
+
+.text-center {
+    margin-top: 10px;
+}
+h2{
+    text-align: center;
+}
+   </style>
+
 </head>
 <body data-bs-theme="dark">
     <nav class="navbar navbar-expand-lg mb-3">
@@ -59,7 +111,7 @@
     <div class="crud-container">
         <div class="card">
             <div class="card-header">
-                <strong>Edit album</strong>
+                <h2>Izmeni album:</h2>
             </div>
             <div class="card-body">
                  <div class="mb-3">
@@ -77,14 +129,16 @@
             </div>
             <div class="card-footer">
                 <button type="button" class="btn btn-success" id="save">
-                    <i class="fa-regular fa-floppy-disk"></i>Save
+                    <i class="fa-regular fa-floppy-disk"></i>Sačuvaj
                 </button>
             </div>
         </div>
     </div>
  </div>
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script src="utils.js"></script>
+
     <script>
        const params=new URLSearchParams(window.location.search)
        const id=params.get('id')
@@ -106,9 +160,24 @@
         inputId.value=data.albumId
         inputTitle.value=data.title
         inputBend.value=data.bend
+document.getElementById('save').addEventListener('click', () => {
 
-       document.getElementById('save').addEventListener('click',() =>{
-            fetch(`/api/album/${data.albumId}`,{
+    Swal.fire({
+        title: 'Sačuvati izmene?',
+        text: 'Da li ste sigurni da želite da sačuvate izmene?',
+        icon: 'question',
+        background: '#2b3035',
+        color: '#fff',
+        showCancelButton: true,
+        confirmButtonColor: '#198754',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sačuvaj',
+        cancelButtonText: 'Ne'
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            fetch(`/api/album/${data.albumId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -117,8 +186,39 @@
                     title: inputTitle.value,
                     bend: inputBend.value
                 })
-            }).then(rsp=> openAll())
-        })
+            })
+            .then(rsp => {
+
+                if (rsp.ok) {
+                    openAll();
+                } else {
+                    Swal.fire({
+                        title: 'Greška!',
+                        text: 'Izmena nije uspela.',
+                        icon: 'error',
+                        background: '#2b3035',
+                        color: '#fff'
+                    });
+                }
+
+            })
+            .catch(error => {
+                console.error(error);
+
+                Swal.fire({
+                    title: 'Greška!',
+                    text: 'Došlo je do greške prilikom izmene.',
+                    icon: 'error',
+                    background: '#2b3035',
+                    color: '#fff'
+                });
+            });
+
+        }
+
+    });
+
+});
 
        })
     </script>

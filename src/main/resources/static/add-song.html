@@ -7,8 +7,60 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    <link rel="stylesheet" href="/css/style.css">
+    
 </head>
+<style>
+    .nav-item {
+            font-size: 20px;
+            font-weight: 500;
+            transition: 0.2s;
+}
+
+.crud-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.edit-box {
+    max-width: 650px;
+    margin: 70px auto;
+    padding: 35px;
+    background-color: #2b3035;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+}
+
+.edit-title {
+    text-align: center;
+    font-size: 38px;
+    font-weight: bold;
+    margin: 0 0 35px 0;
+}
+
+.form-label {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    height: 50px;
+    font-size: 17px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    font-size: 18px;
+    padding: 10px 35px;
+}
+
+.text-center {
+    margin-top: 10px;
+}
+h2{
+    text-align: center;
+}
+   </style>
 
 <body data-bs-theme="dark">
 
@@ -105,7 +157,7 @@
             <div class="card-footer">
                 <button type="button" class="btn btn-success" id="save">
                     <i class="fa-regular fa-floppy-disk"></i>
-                    Save
+                    Sačuvaj
                 </button>
 
                 <a href="list.html" class="btn btn-secondary">
@@ -116,7 +168,7 @@
 
     </div>
 </div>
-
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script src="utils.js"></script>
 
@@ -147,31 +199,70 @@ fetch('/api/album')
 
 });
 document.getElementById('save').addEventListener('click', () => {
-    fetch('/api/song', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            title: inputTitle.value,
-            lyrics: inputLyrics.value,
-            poster: inputPoster.value,
-            time: inputTime.value,
-            date: inputDate.value,
-            album: {
-                albumId: inputAlbumId.value
-            }
-        })
-    })
-    .then(async rsp => {
-        console.log("STATUS:", rsp.status);
-        console.log(await rsp.text());
 
-        if (rsp.ok) {
-            openAll();
+    Swal.fire({
+        title: 'Dodati pesmu?',
+        text: 'Da li želite da sačuvate novu pesmu?',
+        icon: 'question',
+        background: '#2b3035',
+        color: '#fff',
+        showCancelButton: true,
+        confirmButtonColor: '#198754',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Dodaj',
+        cancelButtonText: 'Ne'
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            fetch('/api/song', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: inputTitle.value,
+                    lyrics: inputLyrics.value,
+                    poster: inputPoster.value,
+                    time: inputTime.value,
+                    date: inputDate.value,
+                    album: {
+                        albumId: inputAlbumId.value
+                    }
+                })
+            })
+            .then(async rsp => {
+                console.log("STATUS:", rsp.status);
+                console.log(await rsp.text());
+
+                if (rsp.ok) {
+                    openAll();
+                } else {
+                    Swal.fire({
+                        title: 'Greška!',
+                        text: 'Dodavanje pesme nije uspelo.',
+                        icon: 'error',
+                        background: '#2b3035',
+                        color: '#fff'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("FETCH ERROR:", error);
+
+                Swal.fire({
+                    title: 'Greška!',
+                    text: 'Došlo je do greške prilikom dodavanja.',
+                    icon: 'error',
+                    background: '#2b3035',
+                    color: '#fff'
+                });
+            });
+
         }
-    })
-    .catch(error => console.error("FETCH ERROR:", error));
+
+    });
+
 });
 </script>
 

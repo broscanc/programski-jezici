@@ -6,6 +6,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body data-bs-theme="dark">
@@ -13,7 +14,7 @@
 <div class="container mt-4">
     <div class="card">
         <div class="card-header">
-            <strong>Edit song</strong>
+            <strong>Izmeni pesmu</strong>
         </div>
 
         <div class="card-body">
@@ -28,7 +29,7 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Lyrics:</label>
+                <label class="form-label">Tekst pesme:</label>
                 <textarea class="form-control" id="lyrics"></textarea>
             </div>
 
@@ -51,12 +52,15 @@
         <div class="card-footer">
             <button type="button" class="btn btn-success" id="save">
                 <i class="fa-regular fa-floppy-disk"></i>
-                Save
+                Sačuvaj
             </button>
         </div>
     </div>
 </div>
 <script src="utils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+
 <script>
 const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
@@ -64,6 +68,8 @@ const id = params.get('id');
 if (id == null || id === '') {
     window.location.href = '/list.html';
 }
+
+let song = null;
 
 const inputId = document.getElementById('id');
 const inputTitle = document.getElementById('title');
@@ -73,16 +79,32 @@ const inputTime = document.getElementById('time');
 const inputDate = document.getElementById('date');
 
 fetch(`/api/song/${id}`)
-    .then(rsp => rsp.json())
-    .then(song => {
-        inputId.value = song.songId;
-        inputTitle.value = song.title;
-        inputLyrics.value = song.lyrics;
-        inputPoster.value = song.poster;
-        inputTime.value = song.time;
-        inputDate.value = song.date;
+.then(rsp => rsp.json())
+.then(data => {
+    song = data;
 
-        document.getElementById('save').addEventListener('click', () => {
+    inputId.value = song.songId;
+    inputTitle.value = song.title;
+    inputLyrics.value = song.lyrics;
+    inputPoster.value = song.poster;
+    inputTime.value = song.time;
+    inputDate.value = song.date;
+});
+
+document.getElementById('save').addEventListener('click', () => {
+    Swal.fire({
+        title: 'Sačuvati izmene?',
+        text: 'Da li ste sigurni da želite da sačuvate izmene?',
+        icon: 'question',
+        background: '#2b3035',
+        color: '#fff',
+        showCancelButton: true,
+        confirmButtonColor: '#198754',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sačuvaj',
+        cancelButtonText: 'Ne'
+    }).then((result) => {
+        if (result.isConfirmed) {
             fetch(`/api/song/${song.songId}`, {
                 method: 'PUT',
                 headers: {
@@ -96,10 +118,13 @@ fetch(`/api/song/${id}`)
                     date: inputDate.value
                 })
             }).then(rsp => {
-                window.location.href = '/list.html';
+                if (rsp.ok) {
+                    window.location.href = '/list.html';
+                }
             });
-        });
+        }
     });
+});
 </script>
 
 </body>
